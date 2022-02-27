@@ -13,7 +13,11 @@ string? skoleNavn = Console.ReadLine();
 Console.Write("Angiv hovedforløb: ");
 string? hovedforløbNavn = Console.ReadLine();
 
+Console.Write("Angiv uddannelseslinje: ");
+string? uddannelseslinje = Console.ReadLine();
 
+Semester semester = new(hovedforløbNavn, skoleNavn);
+semester.SetUddannelseslinje(uddannelseslinje);
 
 // ---------------------------------------------------------------------------------
 // Opret List af model klasserne
@@ -46,11 +50,10 @@ while (true)
 
     // ---------------------------------------------------------------------------------
     // Vis titel.
-    Semester semester = new(hovedforløbNavn, skoleNavn);
     Console.ForegroundColor = ConsoleColor.White;
     Console.WriteLine("----------------------------------------------------------");
     Console.ForegroundColor = ConsoleColor.Green;
-    Console.WriteLine($"{semester.SchoolName}, {semester.SemesterNavn} fag tilmeldning app.");
+    Console.WriteLine($"{semester.SchoolName}, {semester.Uddannelseslinje}, {semester.SemesterNavn} fag tilmeldning app.");
     Console.ForegroundColor = ConsoleColor.White;
     Console.WriteLine("----------------------------------------------------------");
     Console.WriteLine();
