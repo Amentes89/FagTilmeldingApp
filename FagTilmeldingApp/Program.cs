@@ -1,47 +1,65 @@
-﻿// Iteration 3
+﻿//Iteration 4
 global using OOPH1.Codes;
 global using OOPH1.Codes.Models;
 
-#region Model and generic list.
+# region Project
+
 string? errorMsg = null;
 Student? matchedStudent = null;
 Course? matchedCourse = null;
 
-Console.Write("Angiv skole: ");
+DBHandler dBHandler = new DBHandler();
+List<Teacher> teachers = dBHandler.GetTeachers();
+List<Course> courses = dBHandler.GetCourse();
+List<Student> students = dBHandler.GetStudent();
+
+Console.Write("Angiv skolens navn: ");
 string? skoleNavn = Console.ReadLine();
 
-Console.Write("Angiv hovedforløb: ");
+Console.Write("Angiv forløb: ");
 string? hovedforløbNavn = Console.ReadLine();
 
 Console.Write("Angiv uddannelseslinje: ");
 string? uddannelseslinje = Console.ReadLine();
 
+string? uddannelseslinjeBeskrivelse = null;
+bool exitLoop = false;
+while (!exitLoop)
+{
+    Console.WriteLine();
+    Console.WriteLine("Ønsker du at angiv en kort beskrivelse af uddannelseslinje: ");
+    Console.WriteLine("1) Ja");
+    Console.WriteLine("2) Nej");
+    Console.Write("Vælg 1 eller 2: ");
+    switch ((Console.ReadKey()).Key)
+    {
+        case ConsoleKey.D1:
+            Console.WriteLine();
+            Console.WriteLine("Angiv kort beskrivelse af uddannelseslinje: ");
+            uddannelseslinjeBeskrivelse = Console.ReadLine();
+            exitLoop = true;
+            break;
+        case ConsoleKey.D2:
+            exitLoop = true;
+            break;
+        default:
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(0, Console.CursorTop);
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(0, currentLineCursor);
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Forkert valgt, prøv igen: ");
+            Console.ForegroundColor = ConsoleColor.White;
+            break;
+    }
+}
+
 Semester semester = new(hovedforløbNavn, skoleNavn);
-semester.SetUddannelseslinje(uddannelseslinje);
-
-// ---------------------------------------------------------------------------------
-// Opret List af model klasserne
-List<Teacher> teachers = new()
-{
-    new Teacher() { Id = 1, FirstName = "Niels", LastName = "Olesen" },
-    new Teacher() { Id = 2, FirstName = "Henrik", LastName = "Poulsen" }
-};
-
-List<Student> students = new()
-{
-    new Student() { Id = 1, FirstName = "Martin", LastName = "Jensen" },
-    new Student() { Id = 2, FirstName = "Patrik", LastName = "Nielsen" },
-    new Student() { Id = 1, FirstName = "Susanne", LastName = "Hansen" },
-    new Student() { Id = 2, FirstName = "Thomas", LastName = "Olsen" }
-};
-
-List<Course> courses = new()
-{
-    new Course() { Id = 1, CourseName = "Grundlæggende programmering", TeacherId = 1 },
-    new Course() { Id = 2, CourseName = "Database programmering", TeacherId = 1 },
-    new Course() { Id = 6, CourseName = "StudieTeknik", TeacherId = 1 },
-    new Course() { Id = 7, CourseName = "Clientside programmering", TeacherId = 2 },
-};
+if (uddannelseslinjeBeskrivelse != null)
+    semester.SetUddannelseslinje(uddannelseslinje, uddannelseslinjeBeskrivelse);
+else
+    semester.SetUddannelseslinje(uddannelseslinje);
 
 List<Enrollment> enrollments = new();
 while (true)
@@ -53,7 +71,15 @@ while (true)
     Console.ForegroundColor = ConsoleColor.White;
     Console.WriteLine("----------------------------------------------------------");
     Console.ForegroundColor = ConsoleColor.Green;
-    Console.WriteLine($"{semester.SchoolName}, {semester.Uddannelseslinje}, {semester.SemesterNavn} fag tilmeldning app.");
+    if (semester.UddannelseslinjeBeskrivelse != null)
+    {
+        Console.WriteLine($"{semester.SchoolName}, {semester.Uddannelseslinje}, {semester.SemesterNavn} fag tilmeldning app.");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"[ {semester.UddannelseslinjeBeskrivelse} ]");
+        Console.ForegroundColor = ConsoleColor.Green;
+    }
+    else
+        Console.WriteLine($"{semester.SchoolName}, {semester.Uddannelseslinje}, {semester.SemesterNavn} fag tilmeldning app.");
     Console.ForegroundColor = ConsoleColor.White;
     Console.WriteLine("----------------------------------------------------------");
     Console.WriteLine();
@@ -74,8 +100,6 @@ while (true)
 
     Console.WriteLine();
 
-    // ---------------------------------------------------------------------------------
-    // Vis fejl beskider.
     if (errorMsg != null)
     {
         Console.ForegroundColor = ConsoleColor.Red;
@@ -125,4 +149,5 @@ while (true)
         }
     }
 }
+
 #endregion

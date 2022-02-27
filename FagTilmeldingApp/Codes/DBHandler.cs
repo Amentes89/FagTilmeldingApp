@@ -11,7 +11,7 @@ internal class DBHandler
 {
     public string ConnectionString
     {
-        get => "Data Source=TEC-8200-LA0006;Initial Catalog=TEC;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        get => "Data Source=SKAB1-PC-02; Initial Catalog=TEC; Integrated Security=True; Connect Timeout=30; Encrypt=False; TrustServerCertificate=False; ApplicationIntent=ReadWrite; MultiSubnetFailover=False";
     }
 
     public List<Teacher> GetTeachers()
@@ -77,28 +77,49 @@ internal class DBHandler
         return list;
     }
 
-    public void InsertNewTeacher(string firstName, string lastName)
+    public void InsertEnrollment(int studentId, int courseId)
     {
         using (SqlConnection con = new SqlConnection(ConnectionString))
         {
             con.Open();
 
             SqlCommand command = new SqlCommand(
-                $"INSERT INTO Teacher VALUES ('{firstName}', '{lastName}')", con
+                $"INSERT INTO Enrollment VALUES ({studentId}, {courseId})", con
             );
 
             command.ExecuteNonQuery();
         }
     }
 
-    public void DeleteTeacher(string firstName, string lastName)
+    public void RemoveStudentFromEnrollment(string firstName, string lastName)
+    {
+        List<Student> students = GetStudent();
+        Student? student = students.FirstOrDefault(x => x.FirstName == firstName && x.LastName == lastName);
+        int? studentId = student != null ? student.Id : null;
+
+        if (studentId != null)
+        {
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                con.Open();
+
+                SqlCommand command = new SqlCommand(
+                    $"DELETE FROM Enrollment WHERE StudentId = {studentId}", con
+                );
+
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+
+    public void RemoveStudentFromEnrollment(int studentId)
     {
         using (SqlConnection con = new SqlConnection(ConnectionString))
         {
             con.Open();
 
             SqlCommand command = new SqlCommand(
-                $"DELETE FROM Teacher WHERE FirstName = '{firstName}' AND LastName = '{lastName}'", con
+                $"DELETE FROM Enrollment WHERE StudentId = {studentId}", con
             );
 
             command.ExecuteNonQuery();
