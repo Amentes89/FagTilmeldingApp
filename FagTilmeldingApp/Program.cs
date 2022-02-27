@@ -1,171 +1,24 @@
-﻿//Iteration 8
+﻿//Box Opgave
 global using OOPH1.Codes;
-global using OOPH1.Codes.EntityFrameworkModels;
+global using OOPH1.Codes.Models;
 
-# region Project
+#region Model and generic list.
 
-EntityFrameworkHandler entityFrameworkHandler = new EntityFrameworkHandler();
-string? errorMsg = null;
-Student? matchedStudent = null;
-Course? matchedCourse = null;
-List<Teacher>? teachers = null;
-List<Course>? courses = null;
-List<Student>? students = null;
-List<Enrollment>? enrollments = null;
-
-entityFrameworkHandler.ClearEnrollmentTable();
-
-Console.Write("Angiv skolens navn: ");
-string? skoleNavn = Console.ReadLine();
-
-Console.Write("Angiv forløb: ");
-string? hovedforløbNavn = Console.ReadLine();
-
-Console.Write("Angiv uddannelseslinje: ");
-string? uddannelseslinje = Console.ReadLine();
-
-string? uddannelseslinjeBeskrivelse = null;
-bool exitLoop = false;
-while (!exitLoop)
+List<Course> courses = new()
 {
-    Console.WriteLine();
-    Console.WriteLine("Ønsker du at angiv en kort beskrivelse af uddannelseslinje: ");
-    Console.WriteLine("1) Ja");
-    Console.WriteLine("2) Nej");
-    Console.Write("Vælg 1 eller 2: ");
-    switch ((Console.ReadKey()).Key)
-    {
-        case ConsoleKey.D1:
-            Console.WriteLine();
-            Console.WriteLine("Angiv kort beskrivelse af uddannelseslinje: ");
-            uddannelseslinjeBeskrivelse = Console.ReadLine();
-            exitLoop = true;
-            break;
-        case ConsoleKey.D2:
-            exitLoop = true;
-            break;
-        default:
-            int currentLineCursor = Console.CursorTop;
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, currentLineCursor);
+    new Course() { Id = 10, CourseName = "Grundlæggende programmering", TeacherId = 1 },
+    new Course() { Id = 5, CourseName = "Database programmering", TeacherId = 1 },
+    new Course() { Id = 6, CourseName = "StudieTeknik", TeacherId = 1 },
+    new Course() { Id = 11, CourseName = "Clientside programmering", TeacherId = 2 },
+};
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Forkert valgt, prøv igen: ");
-            Console.ForegroundColor = ConsoleColor.White;
-            break;
-    }
-}
+Semester s = new Semester("TEC", "H1");
+s.SetCourseCount(courses);
 
-Semester semester = new(hovedforløbNavn, skoleNavn);
-if (uddannelseslinjeBeskrivelse != null)
-    semester.SetUddannelseslinje(uddannelseslinje, uddannelseslinjeBeskrivelse);
-else
-    semester.SetUddannelseslinje(uddannelseslinje);
+Console.WriteLine($"Skolen har i alt : {s.FagIAlt} fag.");
+Console.WriteLine();
+Console.WriteLine($"H1 har i alt : {s.ProgrammeringsFagIAlt} programmerings fag");
 
-while (true)
-{
-    Console.Clear();
-
-    // ---------------------------------------------------------------------------------
-    // Vis titel.
-    Console.ForegroundColor = ConsoleColor.White;
-    Console.WriteLine("----------------------------------------------------------");
-    Console.ForegroundColor = ConsoleColor.Green;
-    if (semester.UddannelseslinjeBeskrivelse != null)
-    {
-        Console.WriteLine($"{semester.SchoolName}, {semester.Uddannelseslinje}, {semester.SemesterNavn} fag tilmeldning app.");
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"[ {semester.UddannelseslinjeBeskrivelse} ]");
-        Console.ForegroundColor = ConsoleColor.Green;
-    }
-    else
-        Console.WriteLine($"{semester.SchoolName}, {semester.Uddannelseslinje}, {semester.SemesterNavn} fag tilmeldning app.");
-    Console.ForegroundColor = ConsoleColor.White;
-    Console.WriteLine("----------------------------------------------------------");
-    Console.WriteLine();
-
-    teachers = (List<Teacher>)entityFrameworkHandler.GetRecords(TecDBTables.Teacher);
-    courses = (List<Course>)entityFrameworkHandler.GetRecords(TecDBTables.Course);
-    students = (List<Student>)entityFrameworkHandler.GetRecords(TecDBTables.Student);
-    enrollments = (List<Enrollment>)entityFrameworkHandler.GetRecords(TecDBTables.Enrollment);
-
-    // ---------------------------------------------------------------------------------
-    // Vis list af tilmeldt elev per fag.
-    int antalTilmeld = (enrollments.Where(a => a.CourseId == 1).ToList()).Count();
-    string? fagNavn = (courses.FirstOrDefault(a => a.Id == 1)).CourseName;
-    Console.WriteLine($"{antalTilmeld} elever i {fagNavn}");
-
-    try
-    {
-        antalTilmeld = (enrollments.Where(a => a.CourseId == 2).ToList()).Count();
-        fagNavn = (courses.FirstOrDefault(a => a.Id == 2)).CourseName;
-        Console.WriteLine($"{antalTilmeld} elever i {fagNavn}");
-        if (antalTilmeld > 3)
-        {
-            throw new Exception($"Der må kun være max 3 elever i {fagNavn}!");
-        }
-    }
-    catch (Exception ex)
-    {
-        errorMsg = ex.Message;
-    }
-
-    antalTilmeld = (enrollments.Where(a => a.CourseId == 6).ToList()).Count();
-    fagNavn = (courses.FirstOrDefault(a => a.Id == 6)).CourseName;
-    Console.WriteLine($"{antalTilmeld} elever i {fagNavn}");
-
-    Console.WriteLine();
-
-    if (errorMsg != null)
-    {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(errorMsg);
-        Console.ForegroundColor = ConsoleColor.White;
-    }
-
-    // ---------------------------------------------------------------------------------
-    // Konfirmation besked til bruger.
-    if (enrollments.Count() > 0)
-    {
-        foreach (Enrollment item in enrollments)
-        {
-            matchedStudent = students.FirstOrDefault(a => a.Id == item.StudentId);
-            matchedCourse = courses.FirstOrDefault(a => a.Id == item.CourseId);
-            if (matchedStudent != null && matchedCourse != null)
-            {
-                Console.WriteLine($"{matchedStudent.FirstName} {matchedStudent.LastName} tilmeld fag {matchedCourse.CourseName}");
-            }
-        }
-        Console.WriteLine("----------------------------------------------------------");
-
-        Console.WriteLine();
-    }
-
-    // ---------------------------------------------------------------------------------
-    // Register elev til et fag med validering
-    errorMsg = null;
-
-    Console.Write("Indsæt elev id: ");
-    string? studentId = Console.ReadLine();
-    errorMsg = Validation.ValidateStudent(studentId, students);
-    if (errorMsg == null)
-    {
-        Console.Write("Indsæt fag id: ");
-        string? courseId = Console.ReadLine();
-        errorMsg = Validation.ValidateCourse(courseId, courses);
-    }
-
-    if (errorMsg == null)
-    {
-        errorMsg = Validation.ValidateEnrollment(enrollments);
-        if (errorMsg == null)
-        {
-            int id = enrollments.Count() + 1;
-            entityFrameworkHandler.InsertEnrollment(Validation.StudentId, Validation.CourseId);
-            //enrollments.Add(new Enrollment() { Id = id, StudentId = Validation.StudentId, CourseId = Validation.CourseId });
-        }
-    }
-}
+Console.ReadLine();
 
 #endregion

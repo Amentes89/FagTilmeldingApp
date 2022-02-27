@@ -9,23 +9,20 @@ namespace OOPH1.Codes;
 internal sealed class Semester : School
 {
     public string? SemesterNavn { get; set; }
-    public override string? Uddannelseslinje { get; set; }
-    public override string? UddannelseslinjeBeskrivelse { get; set; }
+
+    public int ProgrammeringsFagIAlt { get; set; }
 
     public Semester(string? semesterNavn, string? schoolName) : base(schoolName)
     {
         SemesterNavn = semesterNavn;
-        SchoolName = schoolName;
     }
 
-    public override void SetUddannelseslinje(string uddannelseslinje)
+    public override void SetCourseCount(List<Course> courses)
     {
-        Uddannelseslinje = uddannelseslinje;
+        base.SetCourseCount(courses);
+        ProgrammeringsFagIAlt = (courses.Where(a => a.CourseName.ToLower().Contains("programmering")).ToList()).Count();
     }
 
-    public void SetUddannelseslinje(string uddannelseslinje, string uddannelseslinjeBeskrivelse)
-    {
-        Uddannelseslinje = uddannelseslinje;
-        UddannelseslinjeBeskrivelse = uddannelseslinjeBeskrivelse;
-    }
+
+
 }
