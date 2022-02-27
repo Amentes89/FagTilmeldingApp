@@ -4,14 +4,16 @@ global using OOPH1.Codes.Models;
 
 # region Project
 
+DBHandler dBHandler = new DBHandler();
 string? errorMsg = null;
 Student? matchedStudent = null;
 Course? matchedCourse = null;
+List<Teacher>? teachers = null;
+List<Course>? courses = null;
+List<Student>? students = null;
+List<Enrollment>? enrollments = null;
 
-DBHandler dBHandler = new DBHandler();
-List<Teacher> teachers = dBHandler.GetTeachers();
-List<Course> courses = dBHandler.GetCourse();
-List<Student> students = dBHandler.GetStudent();
+dBHandler.DropEnrollmentTable();
 
 Console.Write("Angiv skolens navn: ");
 string? skoleNavn = Console.ReadLine();
@@ -61,7 +63,6 @@ if (uddannelseslinjeBeskrivelse != null)
 else
     semester.SetUddannelseslinje(uddannelseslinje);
 
-List<Enrollment> enrollments = new();
 while (true)
 {
     Console.Clear();
@@ -84,15 +85,31 @@ while (true)
     Console.WriteLine("----------------------------------------------------------");
     Console.WriteLine();
 
+    teachers = (List<Teacher>)dBHandler.GetRecords(TecDBTables.Teacher);
+    courses = (List<Course>)dBHandler.GetRecords(TecDBTables.Course);
+    students = (List<Student>)dBHandler.GetRecords(TecDBTables.Student);
+    enrollments = (List<Enrollment>)dBHandler.GetRecords(TecDBTables.Enrollment);
+
     // ---------------------------------------------------------------------------------
     // Vis list af tilmeldt elev per fag.
     int antalTilmeld = (enrollments.Where(a => a.CourseId == 1).ToList()).Count();
     string? fagNavn = (courses.FirstOrDefault(a => a.Id == 1)).CourseName;
     Console.WriteLine($"{antalTilmeld} elever i {fagNavn}");
 
-    antalTilmeld = (enrollments.Where(a => a.CourseId == 2).ToList()).Count();
-    fagNavn = (courses.FirstOrDefault(a => a.Id == 2)).CourseName;
-    Console.WriteLine($"{antalTilmeld} elever i {fagNavn}");
+    try
+    {
+        antalTilmeld = (enrollments.Where(a => a.CourseId == 2).ToList()).Count();
+        fagNavn = (courses.FirstOrDefault(a => a.Id == 2)).CourseName;
+        Console.WriteLine($"{antalTilmeld} elever i {fagNavn}");
+        if (antalTilmeld > 3)
+        {
+            throw new Exception($"Der må kun være max 3 elever i {fagNavn}!");
+        }
+    }
+    catch (Exception ex)
+    {
+        errorMsg = ex.Message;
+    }
 
     antalTilmeld = (enrollments.Where(a => a.CourseId == 6).ToList()).Count();
     fagNavn = (courses.FirstOrDefault(a => a.Id == 6)).CourseName;
@@ -145,7 +162,8 @@ while (true)
         if (errorMsg == null)
         {
             int id = enrollments.Count() + 1;
-            enrollments.Add(new Enrollment() { Id = id, StudentId = Validation.StudentId, CourseId = Validation.CourseId });
+            dBHandler.InsertEnrollment(Validation.StudentId, Validation.CourseId);
+            //enrollments.Add(new Enrollment() { Id = id, StudentId = Validation.StudentId, CourseId = Validation.CourseId });
         }
     }
 }
