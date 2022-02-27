@@ -1,10 +1,10 @@
-﻿//Iteration 6
+﻿//Iteration 7
 global using OOPH1.Codes;
-global using OOPH1.Codes.Models;
+global using OOPH1.Codes.EntityFrameworkModels;
 
 # region Project
 
-DBHandler dBHandler = new DBHandler();
+EntityFrameworkHandler entityFrameworkHandler = new EntityFrameworkHandler();
 string? errorMsg = null;
 Student? matchedStudent = null;
 Course? matchedCourse = null;
@@ -13,7 +13,7 @@ List<Course>? courses = null;
 List<Student>? students = null;
 List<Enrollment>? enrollments = null;
 
-dBHandler.DropEnrollmentTable();
+entityFrameworkHandler.ClearEnrollmentTable();
 
 Console.Write("Angiv skolens navn: ");
 string? skoleNavn = Console.ReadLine();
@@ -85,10 +85,10 @@ while (true)
     Console.WriteLine("----------------------------------------------------------");
     Console.WriteLine();
 
-    teachers = (List<Teacher>)dBHandler.GetRecords(TecDBTables.Teacher);
-    courses = (List<Course>)dBHandler.GetRecords(TecDBTables.Course);
-    students = (List<Student>)dBHandler.GetRecords(TecDBTables.Student);
-    enrollments = (List<Enrollment>)dBHandler.GetRecords(TecDBTables.Enrollment);
+    teachers = (List<Teacher>)entityFrameworkHandler.GetRecords(TecDBTables.Teacher);
+    courses = (List<Course>)entityFrameworkHandler.GetRecords(TecDBTables.Course);
+    students = (List<Student>)entityFrameworkHandler.GetRecords(TecDBTables.Student);
+    enrollments = (List<Enrollment>)entityFrameworkHandler.GetRecords(TecDBTables.Enrollment);
 
     // ---------------------------------------------------------------------------------
     // Vis list af tilmeldt elev per fag.
@@ -162,7 +162,7 @@ while (true)
         if (errorMsg == null)
         {
             int id = enrollments.Count() + 1;
-            dBHandler.InsertEnrollment(Validation.StudentId, Validation.CourseId);
+            entityFrameworkHandler.InsertEnrollment(Validation.StudentId, Validation.CourseId);
             //enrollments.Add(new Enrollment() { Id = id, StudentId = Validation.StudentId, CourseId = Validation.CourseId });
         }
     }
