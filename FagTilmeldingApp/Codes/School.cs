@@ -4,18 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FagTilmeldingApp.Codes
+namespace OOPH1.Codes;
+
+internal abstract class School
 {
-    internal class School
+    public string? SchoolName { get; set; }
+
+    public School(string? schoolName)
     {
-        public string? SchoolName;
-
-        public School()
-        {
-            Console.Write("Angiv Skole: ");
-            SchoolName = Console.ReadLine();
-        }
-
-
+        SchoolName = schoolName;
     }
 }

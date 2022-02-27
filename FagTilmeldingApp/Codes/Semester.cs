@@ -4,16 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FagTilmeldingApp.Codes
-{
-    internal class Semester : School
-    {
-        public string? SemesterNavn;
+namespace OOPH1.Codes;
 
-        public Semester()
-        {
-            Console.Write("Angiv Hovedforløb: ");
-            SemesterNavn = Console.ReadLine();
-        }
+internal sealed class Semester : School
+{
+    public string? SemesterNavn { get; set; }
+
+    public Semester(string? semesterNavn, string? schoolName) : base(schoolName)
+    {
+        SemesterNavn = semesterNavn;
     }
 }

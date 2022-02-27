@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FagTilmeldningApp.Codes.Models
+namespace OOPH1.Codes.Models;
+
+internal class Teacher
 {
-    internal class Teacher
-    {
-        public int Id { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-    }
+    public int Id { get; set; }
+
+    public string? FirstName { get; set; }
+
+    public string? LastName { get; set; }
 }
