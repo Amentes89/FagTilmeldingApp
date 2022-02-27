@@ -1,24 +1,30 @@
 ﻿//Box Opgave
 global using OOPH1.Codes;
-global using OOPH1.Codes.Models;
 
-#region Model and generic list.
+Box a = new Box(5.0, 5.0, 5.0);
+Console.WriteLine($"Box a : {a.ToString()}");
 
-List<Course> courses = new()
+Console.WriteLine();
+
+Box b = new Box(4.0, 4.0, 4.0);
+Console.WriteLine($"Box b : {b.ToString()}");
+
+Console.WriteLine();
+
+Box c = a + b;
+Console.WriteLine($"Box c : {c.ToString()}");
+
+List<Box> boxes = new()
 {
-    new Course() { Id = 10, CourseName = "Grundlæggende programmering", TeacherId = 1 },
-    new Course() { Id = 5, CourseName = "Database programmering", TeacherId = 1 },
-    new Course() { Id = 6, CourseName = "StudieTeknik", TeacherId = 1 },
-    new Course() { Id = 11, CourseName = "Clientside programmering", TeacherId = 2 },
+    a,
+    b,
+    c
 };
 
-Semester s = new Semester("TEC", "H1");
-s.SetCourseCount(courses);
+boxes.Sort();
+boxes.Reverse();
 
-Console.WriteLine($"Skolen har i alt : {s.FagIAlt} fag.");
-Console.WriteLine();
-Console.WriteLine($"H1 har i alt : {s.ProgrammeringsFagIAlt} programmerings fag");
+foreach (Box item in boxes)
+    Console.WriteLine($"Volume : {item.Volume}");
 
 Console.ReadLine();
-
-#endregion
